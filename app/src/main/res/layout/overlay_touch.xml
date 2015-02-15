@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:weightSum="1"
+				android:id="@+id/mainLayout"
+				android:orientation="vertical"
+				android:alpha="0.95"
+				android:nestedScrollingEnabled="false"
+				android:gravity="top|fill_vertical"
+				android:showDividers="middle|beginning|end">
+
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:background="@color/primary_dark_material_dark"
+		android:alpha="0.75"
+		android:baselineAligned="false"
+		android:gravity="top"
+		android:layout_gravity="top">
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Hide\nOverlay"
+			android:id="@+id/btn_hideOverlay"
+			android:layout_weight="0.20"
+			android:onClick="btnHideOverlay"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Setup\nOrbs"
+			android:id="@+id/btn_setupOrbs"
+			android:layout_weight="0.20"
+			android:onClick="btnSetupOrbs"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="fill_parent"
+			android:text="Combo\nList"
+			android:id="@+id/btn_comboList"
+			android:layout_weight="0.20"
+			android:onClick="btnComboList"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="fill_parent"
+			android:text="Run\nAgain"
+			android:id="@+id/btn_replay"
+			android:layout_weight="0.20"
+			android:onClick="btnRunAgain"/>
+	</LinearLayout>
+
+</LinearLayout>

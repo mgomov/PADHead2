@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:orientation="vertical"
+			  android:layout_width="fill_parent"
+			  android:layout_height="fill_parent"
+			  android:weightSum="1"
+			  android:focusable="false">
+
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_weight="0.48"
+		android:weightSum="1.0">
+
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.00"
+			android:background="@color/primary_dark_material_dark"
+			android:alpha="0.75">
+
+			<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Cancel"
+				android:id="@+id/btn_cancelOrbSetup"
+				android:layout_weight="0.25"
+				android:onClick="btnCancelOrbSetup"/>
+
+			<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Settings"
+				android:id="@+id/btn_orbSettings"
+				android:layout_weight="0.25"
+				android:onClick="btnWeightSettings"/>
+
+			<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Drop"
+				android:id="@+id/btn_resetOrbSetup"
+				android:layout_weight="0.25"
+				android:onClick="btnResetOrbSetup"/>
+
+			<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Submit"
+				android:id="@+id/btn_submitOrbSetup"
+				android:layout_weight="0.25"
+				android:onClick="btnSubmitOrbSetup"/>
+		</LinearLayout>
+
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.55">
+
+			<Space
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.6"/>
+
+			<LinearLayout
+				android:orientation="vertical"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:weightSum="1">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceLarge"
+					android:id="@+id/tvOrbSetupLog"
+					android:layout_gravity="center_horizontal"
+					android:visibility="invisible"
+					android:background="@color/background_material_dark"
+					android:layout_weight="0.2"/>
+
+				<ProgressBar
+					style="?android:attr/progressBarStyleHorizontal"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:id="@+id/pb_orbSetup"
+					android:indeterminate="false"
+					android:visibility="invisible"
+					android:background="@color/background_material_dark"
+					android:layout_gravity="center"
+					android:layout_weight="0.2"/>
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:background="@color/primary_dark_material_dark"
+			android:alpha="0.75"
+			android:baselineAligned="false"
+			android:gravity="top"
+			android:layout_weight="0.35">
+
+			<Button
+				android:layout_width="wrap_content"
+				android:layout_height="fill_parent"
+				android:text="Red"
+				android:id="@+id/btn_redOrbSelect"
+				android:layout_weight="0.16"
+				android:onClick="btnRed"
+				android:longClickable="true"
+				android:background="#ff0000"/>
+
+			<Button
+				android:layout_width="wrap_content"
+				android:layout_height="fill_parent"
+				android:text="Blue"
+				android:id="@+id/btn_blueOrbSelect"
+				android:layout_weight="0.16"
+				android:onClick="btnBlue"
+				android:longClickable="true"
+				android:background="#0000ff"/>
+
+			<Button
+				android:layout_width="wrap_content"
+				android:layout_height="fill_parent"
+				android:text="Green"
+				android:id="@+id/btn_greenOrbSelect"
+				android:layout_weight="0.16"
+				android:onClick="btnGreen"
+				android:longClickable="true"
+				android:background="#33ff33"
+				android:textColor="#000000"/>
+
+			<Button
+				android:layout_width="wrap_content"
+				android:layout_height="fill_parent"
+				android:text="Light"
+				android:id="@+id/btn_lightOrbSelect"
+				android:layout_weight="0.16"
+				android:onClick="btnLight"
+				android:longClickable="true"
+				android:background="#ffff00"
+				android:backgroundTintMode="add"
+				android:textColor="#000000"/>
+
+			<Button
+				android:layout_width="wrap_content"
+				android:layout_height="fill_parent"
+				android:text="Dark"
+				android:id="@+id/btn_darkOrbSelect"
+				android:layout_weight="0.16"
+				android:onClick="btnDark"
+				android:longClickable="true"
+				android:background="#aa00aa"/>
+
+			<Button
+				android:layout_width="wrap_content"
+				android:layout_height="fill_parent"
+				android:text="Heart"
+				android:id="@+id/btn_healthOrbSelect"
+				android:layout_weight="0.16"
+				android:onClick="btnHeart"
+				android:longClickable="true"
+				android:background="#ff33ff"/>
+
+		</LinearLayout>
+
+		<Space
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.1"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_weight="0.52"
+		android:orientation="vertical"
+		android:weightSum="1"
+		android:gravity="bottom"
+		android:alpha="1"
+		android:id="@+id/ll_setup_orb_container">
+
+	</LinearLayout>
+
+</LinearLayout>

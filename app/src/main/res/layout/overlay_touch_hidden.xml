@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:weightSum="1"
+				android:id="@+id/mainLayout"
+				android:alpha="0.95"
+				android:nestedScrollingEnabled="false"
+				android:gravity="top|fill_vertical"
+				android:orientation="vertical"
+				android:descendantFocusability="blocksDescendants">
+
+		<Button
+			android:layout_width="match_parent"
+			android:layout_height="16dp"
+			android:id="@+id/btn_showOverlay"
+			android:onClick="btnShowOverlay"/>
+
+
+
+</LinearLayout>

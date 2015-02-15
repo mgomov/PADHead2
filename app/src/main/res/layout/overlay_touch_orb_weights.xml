@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:orientation="vertical"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:background="@color/background_material_dark"
+			  android:alpha="0.65"
+			  android:focusable="false">
+
+	<ScrollView
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/scrollView"
+		android:layout_weight="0.9"
+		android:focusable="false">
+
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			>
+
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceMedium"
+					android:text="Max #moves"
+					android:id="@+id/textView8"
+					android:layout_weight="0.2"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="number"
+					android:ems="3"
+					android:id="@+id/et_maxMoves"
+					android:layout_weight="0.10"
+					android:text="25"/>
+
+				<CheckBox
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Allow 8dir movement"
+					android:id="@+id/cb_8dir"
+					android:checked="false"
+					android:layout_weight="0.7"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:layout_weight="0.142">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceMedium"
+					android:text="Red"
+					android:id="@+id/textView"
+					android:layout_weight="0.34"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_rnw"
+					android:layout_weight="0.33"
+					android:text="1.0"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_rmw"
+					android:layout_weight="0.33"
+					android:text="3.0"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:layout_weight="0.142">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceMedium"
+					android:text="Blue"
+					android:id="@+id/textView2"
+					android:layout_weight="0.34"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_bnw"
+					android:layout_weight="0.33"
+					android:text="1.0"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_bmw"
+					android:layout_weight="0.33"
+					android:text="3.0"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:layout_weight="0.142">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceMedium"
+					android:text="Green"
+					android:id="@+id/textView3"
+					android:layout_weight="0.34"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_gnw"
+					android:layout_weight="0.33"
+					android:text="1.0"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_gmw"
+					android:layout_weight="0.33"
+					android:text="3.0"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:layout_weight="0.142">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceMedium"
+					android:text="Purple"
+					android:id="@+id/textView4"
+					android:layout_weight="0.34"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_pnw"
+					android:layout_weight="0.33"
+					android:text="1.0"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_pmw"
+					android:layout_weight="0.33"
+					android:text="3.0"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:layout_weight="0.142">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceMedium"
+					android:text="Yellow"
+					android:id="@+id/textView5"
+					android:layout_weight="0.34"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_ynw"
+					android:layout_weight="0.33"
+					android:text="1.0"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_ymw"
+					android:layout_weight="0.33"
+					android:text="3.0"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:layout_weight="0.142">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceMedium"
+					android:text="Health"
+					android:id="@+id/textView6"
+					android:layout_weight="0.34"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_hnw"
+					android:layout_weight="0.33"
+					android:text="0.3"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_hmw"
+					android:layout_weight="0.33"
+					android:text="0.3"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:layout_weight="0.142">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceMedium"
+					android:text="Junk"
+					android:id="@+id/textView7"
+					android:layout_weight="0.34"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_jnw"
+					android:layout_weight="0.33"
+					android:text="0.1"/>
+
+				<EditText
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"
+					android:ems="5"
+					android:id="@+id/et_jmw"
+					android:layout_weight="0.33"
+					android:text="0.1"/>
+
+			</LinearLayout>
+
+			<RadioGroup
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:id="@+id/rg_weightPresets">
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="5-color team, multi target"
+					android:id="@+id/rb_5cmt"
+					android:checked="true"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="5-color team, single target"
+					android:id="@+id/rb_5ctst"
+					android:checked="false"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Recovery"
+					android:id="@+id/rb_rcv"
+					android:checked="false"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Recovery, multiple target"
+					android:id="@+id/rb_rcvmt"
+					android:checked="false"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Fire team, multiple target"
+					android:id="@+id/rb_ftmt"
+					android:checked="false"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Fire team, single target"
+					android:id="@+id/rb_ftst"
+					android:checked="false"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Water team, multiple target"
+					android:id="@+id/rb_wtmt"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Water team, single target"
+					android:id="@+id/rb_wtst"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Wood team, multiple target"
+					android:id="@+id/rb_wdtmt"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Wood team, single target"
+					android:id="@+id/rb_wdtst"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Light team, multiple target"
+					android:id="@+id/rb_ltmt"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Light team, single target"
+					android:id="@+id/rb_ltst"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Dark team, multiple target"
+					android:id="@+id/rb_dtmt"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Dark team, single target"
+					android:id="@+id/rb_dtst"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Water/Purple/Green multitarget"
+					android:id="@+id/rb_customMT"/>
+
+				<RadioButton
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:text="Water/Purple/Green team single"
+					android:id="@+id/rb_customST"/>
+
+				<RadioButton
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Red/Green/Yellow multiple target"
+					android:id="@+id/rb_custom2MT"/>
+
+				<RadioButton
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Red/Green/Yellow single target"
+					android:id="@+id/rb_custom2ST"/>
+
+			</RadioGroup>
+
+		</LinearLayout>
+	</ScrollView>
+
+	<Button
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="Done"
+		android:id="@+id/button"
+		android:layout_weight="0.1"
+		android:onClick="btnWeightsDone"
+		android:focusable="false"/>
+
+</LinearLayout>
