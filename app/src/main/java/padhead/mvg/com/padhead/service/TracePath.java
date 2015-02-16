@@ -15,25 +15,37 @@ import padhead.mvg.com.padhead.R;
  * Author: Maxim Gomov
  */
 public class TracePath extends AsyncTask<ArrayList<Button>, Button, Void> {
-	/** Time in ms spent per orb */
+	/**
+	 * Time in ms spent per orb
+	 */
 	long timePerOrb = 0;
 
-	/** Total amount of elapsed time while this task has been running */
+	/**
+	 * Total amount of elapsed time while this task has been running
+	 */
 	long globalElapsed = 0;
 
-	/** Counter for the current step the path is on, which is displayed on the actual path step */
+	/**
+	 * Counter for the current step the path is on, which is displayed on the actual path step
+	 */
 	int itr = 0;
 
-	/** Accessor to the touchable overlay */
+	/**
+	 * Accessor to the touchable overlay
+	 */
 	View overlayTouch;
 
-	/** Accessor to the touchless overlay, i.e. where the path is displayed for the user to follow */
+	/**
+	 * Accessor to the touchless overlay, i.e. where the path is displayed for the user to follow
+	 */
 	View overlayTouchless;
 
-	/** Binding for the displayed 'path tiles' on the touchless overlay */
+	/**
+	 * Binding for the displayed 'path tiles' on the touchless overlay
+	 */
 	PathDisplayBindings pathBinds;
 
-	public TracePath(View overlayTouch, View overlayTouchless, PathDisplayBindings pathBinds){
+	public TracePath(View overlayTouch, View overlayTouchless, PathDisplayBindings pathBinds) {
 		this.overlayTouch = overlayTouch;
 		this.overlayTouchless = overlayTouchless;
 		this.pathBinds = pathBinds;

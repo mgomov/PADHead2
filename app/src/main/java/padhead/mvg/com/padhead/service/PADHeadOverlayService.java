@@ -4,19 +4,27 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import padhead.mvg.com.padhead.R;
 import padhead.mvg.com.padhead.overlay.OverlayService;
@@ -29,79 +37,124 @@ import padhead.mvg.com.padhead.overlay.OverlayTouchless;
 import padhead.mvg.com.padhead.solver.OrbWeight;
 import padhead.mvg.com.padhead.solver.PADBoard;
 import padhead.mvg.com.padhead.solver.PADHeadSolver;
-import padhead.mvg.com.padhead.solver.PADHeadSolverAsync;
 import padhead.mvg.com.padhead.solver.PADSolution;
 
 /**
  * Service that handles the click handlers and general application
- * Author: Maxim Gomov */
+ * Author: Maxim Gomov
+ */
 
 public class PADHeadOverlayService extends OverlayService {
 
-	/** If this is toggled, enables debugging statements for the entire application by being or'd with */
+	/**
+	 * If this is toggled, enables debugging statements for the entire application by being or'd with
+	 */
 	public static boolean debugAll = false;
 
-	/** Local debugging flag */
+	/**
+	 * Local debugging flag
+	 */
 	private boolean debug = false;
 
-	/** A reference to this instance, to pass around between classes and functions that need to
-		reference this context */
+	/**
+	 * A reference to this instance, to pass around between classes and functions that need to
+	 * reference this context
+	 */
 	public static PADHeadOverlayService instance;
 
-	/** The 'touchless overlay' which displays the running path */
+	/**
+	 * The 'touchless overlay' which displays the running path
+	 */
 	private OverlayTouchless overlayTouchless;
 
-	/** Solution for the touchless overlay to path over */
+	/**
+	 * Solution for the touchless overlay to path over
+	 */
 	private PADSolution activeSolution;
 
-	/** Touchable overlay at the top of the main screen of the application */
+	/**
+	 * Touchable overlay at the top of the main screen of the application
+	 */
 	private OverlayTouch overlayTouch;
 
-	/** Touchable overlay which has a trigger to unhide the overlay */
+	/**
+	 * Touchable overlay which has a trigger to unhide the overlay
+	 */
 	private OverlayTouchHidden overlayTouchHidden;
 
-	/** Touchable overlay responsible for orb setup and general game settings */
+	/**
+	 * Touchable overlay responsible for orb setup and general game settings
+	 */
 	private OverlayTouchOrbSetup overlayTouchOrbSetup;
 
-	/** Touchable overlay for picking a solution to display */
+	/**
+	 * Touchable overlay for picking a solution to display
+	 */
 	private OverlayTouchSolutions overlayTouchSolutions;
 
-	/** Touchable overlay for setting up orb weights */
+	/**
+	 * Touchable overlay for setting up orb weights
+	 */
 	private OverlayTouchWeightSettings overlayTouchWeightSettings;
 
-	/** Convenience binding for the 'buttons' used to handle path display */
+	/**
+	 * Convenience binding for the 'buttons' used to handle path display
+	 */
 	private PathDisplayBindings pathBinds;
 
-	/** Convenience binding for the clickable buttons used to handle orb setup */
+	/**
+	 * Convenience binding for the clickable buttons used to handle orb setup
+	 */
 	private SetupDisplayBindings setupBinds;
 
-	/** Handles triple tapping on a color to fill when overlayTouchOrbSetup is active */
+	/**
+	 * Handles triple tapping on a color to fill when overlayTouchOrbSetup is active
+	 */
 	private boolean tripleTapFill = false;
 
-	/** Handles the drop button behavior in overlayTouchOrbSetup */
+	/**
+	 * Handles the drop button behavior in overlayTouchOrbSetup
+	 */
 	private boolean doubleTapReset = false;
 
-	/** List of weights used to prune less-desirable solutions */
+	/**
+	 * List of weights used to prune less-desirable solutions
+	 */
 	private ArrayList<OrbWeight> weights;
 
-	/** Maximum number of moves that the solver will accept */
+	/**
+	 * Maximum number of moves that the solver will accept
+	 */
 	private int maxMoves = 26;
 
-	/** Toggle which determines if 8directional movement is allowed in the solver's pathing */
+	/**
+	 * Toggle which determines if 8directional movement is allowed in the solver's pathing
+	 */
 	private boolean allow8Dir = false;
 
-	/** Maximumm number of simplified (i.e., discrete) solutions */
+	/**
+	 * Maximumm number of simplified (i.e., discrete) solutions
+	 */
 	private int maxSimplifiedSolutions = 30;
 
-	/** Rows and columns for the board, conceivably extensible past PAD */
+	/**
+	 * Contains the radiobuttons generated from parsing weight_values.json
+	 */
+	HashMap<Integer, WeightedRadioButton> radioButtons;
+
+	/**
+	 * Rows and columns for the board, conceivably extensible past PAD
+	 */
 	public static int rows = 5;
 	public static int cols = 6;
 
-	/** Convenience enum to handle the definitions of orbs:
-	 *
-	 *  'c' is the fancy unicode to display on the buttons for visual cues
-	 *
-	 *  'rc' is the actual character representation used for that orb */
+	/**
+	 * Convenience enum to handle the definitions of orbs:
+	 * <p/>
+	 * 'c' is the fancy unicode to display on the buttons for visual cues
+	 * <p/>
+	 * 'rc' is the actual character representation used for that orb
+	 */
 
 	public enum ORB {
 		RED('☗', "#ff0000", "#CC0000", 'r'), BLUE('☔', "#0000ff", "#0000CC", 'b'), GREEN('♣', "#00ff00", "#00CC00", 'g'), YELLOW('☀', "#ffff00", "#CCCC00", 'y'), PURPLE('☪', "#9900CC", "#7A00A3", 'p'), HEART('♥', "#ff1493", "#CC1076", 'h'), NONE(' ', "#ffffff", "#ffffff", 'u');
@@ -117,7 +170,9 @@ public class PADHeadOverlayService extends OverlayService {
 		}
 	}
 
-	/** Current active orb for marking the board state in overlayTouchOrbSetup */
+	/**
+	 * Current active orb for marking the board state in overlayTouchOrbSetup
+	 */
 	public ORB activeOrb;
 
 	@Override
@@ -234,68 +289,57 @@ public class PADHeadOverlayService extends OverlayService {
 		pathBinds = new PathDisplayBindings(overlayTouchless, rows, cols);
 		setupBinds = new SetupDisplayBindings(this, overlayTouchOrbSetup, rows, cols);
 
+		/* Block to populate the weights options */
+
 		// the radiogroup for the weight preset selections
 		RadioGroup radioGroup = (RadioGroup) overlayTouchWeightSettings.findViewById(R.id.rg_weightPresets);
+
 		radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
-				switch (checkedId) {
-					case R.id.rb_5cmt:
-						setWeights(1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_5ctst:
-						setWeights(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_rcv:
-						setWeights(0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 1, 1, 0.1f, 0.1f);
-						break;
-					case R.id.rb_rcvmt:
-						setWeights(0.1f, 0.3f, 0.1f, 0.3f, 0.1f, 0.3f, 0.1f, 0.3f, 0.1f, 0.3f, 1f, 1f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_ftmt:
-						setWeights(1, 3, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_ftst:
-						setWeights(1, 1, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_wtmt:
-						setWeights(0.1f, 0.1f, 1f, 3f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_wtst:
-						setWeights(0.1f, 0.1f, 1f, 1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_wdtmt:
-						setWeights(0.1f, 0.1f, 0.1f, 0.1f, 1f, 3f, 0.1f, 0.1f, 0.1f, 0.1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_wdtst:
-						setWeights(0.1f, 0.1f, 0.1f, 0.1f, 1f, 1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_dtmt:
-						setWeights(0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 1f, 3f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_dtst:
-						setWeights(0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 1f, 1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_ltmt:
-						setWeights(0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 1f, 3f, 0.1f, 0.1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_ltst:
-						setWeights(0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 1f, 1f, 0.1f, 0.1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_customMT:
-						setWeights(0.1f, 0.1f, 1f, 3f, 1f, 3f, 0.3f, 0.3f, 1f, 3f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_customST:
-						setWeights(0.1f, 0.1f, 1f, 1f, 1f, 1f, 0.3f, 0.3f, 1f, 1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_custom2MT:
-						setWeights(1f, 3f, 0.1f, 0.1f, 1f, 3f, 1f, 3f, 0.1f, 0.1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-					case R.id.rb_custom2ST:
-						setWeights(1f, 1f, 0.1f, 0.1f, 1f, 1f, 1f, 1f, 0.1f, 0.1f, 0.3f, 0.3f, 0.1f, 0.1f);
-						break;
-				}
+				WeightedRadioButton btn = radioButtons.get(checkedId);
+				setWeights(btn.rnw(), btn.rmw(), btn.bnw(), btn.bmw(), btn.gnw(), btn.gmw(), btn.lnw(), btn.lmw(), btn.dnw(), btn.dmw(), btn.hnw(), btn.hmw(), btn.jnw(), btn.jmw());
+
 			}
 		});
+
+		radioButtons = new HashMap<Integer, WeightedRadioButton>();
+
+		// base for the generated IDs for each radiobutton, i.e. id = idMask + i
+		int idMask = 'P' + 'A' + 'D' + 'H' + 'E' + 'A' + 'D';
+
+		String json = "";
+		InputStream inputStream = this.getResources().openRawResource(R.raw.weight_values);
+		JSONObject jsonObject = null;
+
+		// read in the weight_values.json file, parse it, and load up the weighted radio buttons into
+		// the list
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+			String readLine = "";
+			while (readLine != null) {
+				json += "\n" + readLine;
+				readLine = br.readLine();
+			}
+
+			jsonObject = new JSONObject(json);
+			JSONArray weights = jsonObject.getJSONArray("weights");
+			for (int i = 0; i < weights.length(); i++) {
+				WeightedRadioButton rb = new WeightedRadioButton(this);
+				JSONObject obj = weights.getJSONObject(i);
+
+				rb.setText(obj.getString("name"));
+				rb.setWeights((float) obj.getDouble("rnw"), (float) obj.getDouble("rmw"), (float) obj.getDouble("bnw"), (float) obj.getDouble("bmw"), (float) obj.getDouble("gnw"), (float) obj.getDouble("gmw"), (float) obj.getDouble("lnw"), (float) obj.getDouble("lmw"), (float) obj.getDouble("dnw"), (float) obj.getDouble("dmw"), (float) obj.getDouble("hnw"), (float) obj.getDouble("hmw"), (float) obj.getDouble("jnw"), (float) obj.getDouble("jmw"));
+				rb.setId(i + idMask);
+				radioGroup.addView(rb);
+				radioButtons.put(i + idMask, rb);
+			}
+		} catch (UnsupportedEncodingException e) {
+			Log.e("Weights", "Unsupported format for weight_values.json");
+		} catch (IOException e) {
+			Log.e("Weights", "Unspecified IO error");
+		} catch (JSONException e) {
+			Log.e("Weights", "JSON Error");
+		}
 
 		// orb default weights setup
 		weights = new ArrayList<OrbWeight>();
@@ -311,8 +355,10 @@ public class PADHeadOverlayService extends OverlayService {
 		((Button) overlayTouch.findViewById(R.id.btn_comboList)).setEnabled(false);
 	}
 
-	/** Called when the drop button is hit, drops all matches in the current board setup to expedite
-	  * the new board setup */
+	/**
+	 * Called when the drop button is hit, drops all matches in the current board setup to expedite
+	 * the new board setup
+	 */
 	public void dropMatches(PADSolution sol) {
 
 		// put the board into the solver and let it process eliminations and drops
@@ -354,15 +400,18 @@ public class PADHeadOverlayService extends OverlayService {
 					b.setBackgroundColor(Color.WHITE);
 					b.setAlpha(0.45f);
 				} else {
-					b.setText(" ");
+					b.setText("" + ORB.NONE.rc);
+					b.setTextColor(Color.TRANSPARENT);
 					b.setBackgroundColor(Color.TRANSPARENT);
 				}
 			}
 		}
 	}
 
-	/** Load the weights from the preset into the text fields (from where, upon leaving the settings
-	  * menu, they get loaded into the actual weights) */
+	/**
+	 * Load the weights from the preset into the text fields (from where, upon leaving the settings
+	 * menu, they get loaded into the actual weights)
+	 */
 	public void setWeights(float RNW, float RMW, float BNW, float BMW, float GNW, float GMW, float LNW, float LMW, float PNW, float PMW, float HNW, float HMW, float JNW, float JMW) {
 		EditText rnw = (EditText) overlayTouchWeightSettings.findViewById(R.id.et_rnw);
 		EditText rmw = (EditText) overlayTouchWeightSettings.findViewById(R.id.et_rmw);
@@ -401,7 +450,9 @@ public class PADHeadOverlayService extends OverlayService {
 		jmw.setText(JMW + "");
 	}
 
-	/** Hides all of the overlays */
+	/**
+	 * Hides all of the overlays
+	 */
 	public void btnHideOverlay(View v) {
 		overlayTouch.setVisibility(View.GONE);
 		overlayTouchHidden.setVisibility(View.VISIBLE);
@@ -409,7 +460,9 @@ public class PADHeadOverlayService extends OverlayService {
 		//overlayTouchHidden.switchTouchFoucusOff();
 	}
 
-	/** Sets the orb setup overlay to be active */
+	/**
+	 * Sets the orb setup overlay to be active
+	 */
 	public void btnSetupOrbs(View v) {
 		overlayTouchOrbSetup.setVisibility(View.VISIBLE);
 		overlayTouch.setVisibility(View.GONE);
@@ -440,21 +493,27 @@ public class PADHeadOverlayService extends OverlayService {
 		((TextView) (overlayTouchOrbSetup.findViewById(R.id.tvOrbSetupLog))).setText("");
 	}
 
-	/** Sets the combo list as the active view*/
+	/**
+	 * Sets the combo list as the active view
+	 */
 	public void btnComboList(View v) {
 		overlayTouchless.setVisibility(View.GONE);
 		overlayTouch.setVisibility(View.GONE);
 		overlayTouchSolutions.setVisibility(View.VISIBLE);
 	}
 
-	/** Unhides the overlay */
+	/**
+	 * Unhides the overlay
+	 */
 	public void btnShowOverlay(View v) {
 		overlayTouch.setVisibility(View.VISIBLE);
 		overlayTouchHidden.setVisibility(View.GONE);
 		overlayTouchless.setVisibility(View.VISIBLE);
 	}
 
-	/** Sets the main view to be active from the orb setup menu */
+	/**
+	 * Sets the main view to be active from the orb setup menu
+	 */
 	public void btnCancelOrbSetup(View v) {
 		doubleTapReset = false;
 		overlayTouchOrbSetup.setVisibility(View.GONE);
@@ -462,12 +521,14 @@ public class PADHeadOverlayService extends OverlayService {
 		overlayTouchless.setVisibility(View.VISIBLE);
 	}
 
-	/** Called from the 'drop' button in the orb setup menu, alternates between dropping orbs and
-	 * wiping the board state entirely */
+	/**
+	 * Called from the 'drop' button in the orb setup menu, alternates between dropping orbs and
+	 * wiping the board state entirely
+	 */
 	public void btnResetOrbSetup(View v) {
-		if(!doubleTapReset){
+		if (!doubleTapReset) {
 			doubleTapReset = true;
-			if(activeSolution != null) {
+			if (activeSolution != null) {
 				dropMatches(activeSolution);
 			}
 		} else {
@@ -476,7 +537,9 @@ public class PADHeadOverlayService extends OverlayService {
 		}
 	}
 
-	/** Submits the orb setup configuration to the solver with the defined presets */
+	/**
+	 * Submits the orb setup configuration to the solver with the defined presets
+	 */
 	public void btnSubmitOrbSetup(View v) {
 
 		// serialize the current orb setup so it can be deserialized into a board state later
@@ -523,8 +586,10 @@ public class PADHeadOverlayService extends OverlayService {
 		}
 	}
 
-	/** Called by the button in overlayTouchOrbSetup, sets the active orb to red or fills on a triple
-	 * tap */
+	/**
+	 * Called by the button in overlayTouchOrbSetup, sets the active orb to red or fills on a triple
+	 * tap
+	 */
 	public void btnRed(View v) {
 		doubleTapReset = false;
 		if (activeOrb == ORB.RED) {
@@ -537,8 +602,10 @@ public class PADHeadOverlayService extends OverlayService {
 		}
 	}
 
-	/** Called by the button in overlayTouchOrbSetup, sets the active orb to blue or fills on a triple
-	 * tap */
+	/**
+	 * Called by the button in overlayTouchOrbSetup, sets the active orb to blue or fills on a triple
+	 * tap
+	 */
 	public void btnBlue(View v) {
 		doubleTapReset = false;
 		if (activeOrb == ORB.BLUE) {
@@ -551,8 +618,10 @@ public class PADHeadOverlayService extends OverlayService {
 		}
 	}
 
-	/** Called by the button in overlayTouchOrbSetup, sets the active orb to green or fills on a triple
-	 * tap */
+	/**
+	 * Called by the button in overlayTouchOrbSetup, sets the active orb to green or fills on a triple
+	 * tap
+	 */
 	public void btnGreen(View v) {
 		doubleTapReset = false;
 		if (activeOrb == ORB.GREEN) {
@@ -565,8 +634,10 @@ public class PADHeadOverlayService extends OverlayService {
 		}
 	}
 
-	/** Called by the button in overlayTouchOrbSetup, sets the active orb to light or fills on a triple
-	 * tap */
+	/**
+	 * Called by the button in overlayTouchOrbSetup, sets the active orb to light or fills on a triple
+	 * tap
+	 */
 	public void btnLight(View v) {
 		doubleTapReset = false;
 		if (activeOrb == ORB.YELLOW) {
@@ -579,11 +650,13 @@ public class PADHeadOverlayService extends OverlayService {
 		}
 	}
 
-	/** Called by the button in overlayTouchOrbSetup, sets the active orb to dark or fills on a triple
-	 * tap */
+	/**
+	 * Called by the button in overlayTouchOrbSetup, sets the active orb to dark or fills on a triple
+	 * tap
+	 */
 	public void btnDark(View v) {
 		doubleTapReset = false;
-		if (activeOrb == ORB.PURPLE){
+		if (activeOrb == ORB.PURPLE) {
 			if (!tripleTapFill) tripleTapFill = true;
 			else
 				setupBinds.fill(ORB.PURPLE);
@@ -593,8 +666,10 @@ public class PADHeadOverlayService extends OverlayService {
 		}
 	}
 
-	/** Called by the button in overlayTouchOrbSetup, sets the active orb to heal or fills on a triple
-	 * tap */
+	/**
+	 * Called by the button in overlayTouchOrbSetup, sets the active orb to heal or fills on a triple
+	 * tap
+	 */
 	public void btnHeart(View v) {
 		doubleTapReset = false;
 		if (activeOrb == ORB.HEART) {
@@ -607,7 +682,9 @@ public class PADHeadOverlayService extends OverlayService {
 		}
 	}
 
-	/** Runs the path again */
+	/**
+	 * Runs the path again
+	 */
 	public void btnRunAgain(View v) {
 		TracePath path = new TracePath(overlayTouch, overlayTouchless, pathBinds);
 		ArrayList<Button> btns = pathBinds.tracePath(activeSolution, false);
@@ -618,7 +695,9 @@ public class PADHeadOverlayService extends OverlayService {
 		path.execute(btns);
 	}
 
-	/** Called from the solution selection view, submits the solution and traces the path */
+	/**
+	 * Called from the solution selection view, submits the solution and traces the path
+	 */
 	public void btnSolutionsSubmit(View v) {
 		if (activeSolution == null) return;
 		overlayTouch.setVisibility(View.VISIBLE);
@@ -631,14 +710,18 @@ public class PADHeadOverlayService extends OverlayService {
 		tp.execute(pathBinds.tracePath(activeSolution, false));
 	}
 
-	/** Called from overlayTouchOrbSetup, opens the weight settings */
+	/**
+	 * Called from overlayTouchOrbSetup, opens the weight settings
+	 */
 	public void btnWeightSettings(View v) {
 		doubleTapReset = false;
 		overlayTouchOrbSetup.setVisibility(View.GONE);
 		overlayTouchWeightSettings.setVisibility(View.VISIBLE);
 	}
 
-	/** Called from the weights setup view, parses the weights and sets the actual values */
+	/**
+	 * Called from the weights setup view, parses the weights and sets the actual values
+	 */
 	public void btnWeightsDone(View v) {
 
 		EditText rnw = (EditText) overlayTouchWeightSettings.findViewById(R.id.et_rnw);
@@ -696,17 +779,21 @@ public class PADHeadOverlayService extends OverlayService {
 		allow8Dir = ((CheckBox) overlayTouchWeightSettings.findViewById(R.id.cb_8dir)).isChecked();
 	}
 
-	/** Sets the active solution for path tracing*/
+	/**
+	 * Sets the active solution for path tracing
+	 */
 	public void setActiveSolution(PADSolution s) {
 		activeSolution = s;
 	}
 
-	/** Sets the triple tap state, used outside of the class */
-	public void setTripleTap(boolean tt){
+	/**
+	 * Sets the triple tap state, used outside of the class
+	 */
+	public void setTripleTap(boolean tt) {
 		tripleTapFill = tt;
 	}
 
-	public ORB getActiveOrb(){
+	public ORB getActiveOrb() {
 		return activeOrb;
 	}
 }

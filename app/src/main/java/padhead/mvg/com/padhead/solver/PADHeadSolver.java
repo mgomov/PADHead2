@@ -5,54 +5,74 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-
 import java.util.HashMap;
 
 import padhead.mvg.com.padhead.service.PADHeadOverlayService;
 
 /**
  * A port of the "pndopt" project on github by kennytm
- *
+ * <p/>
  * https://github.com/kennytm
- *
+ * <p/>
  * and
- *
- * https://github.com/kennytm/pndopt */
+ * <p/>
+ * https://github.com/kennytm/pndopt
+ */
 public class PADHeadSolver {
-	public boolean debug = true | PADHeadOverlayService.debugAll;
+	public boolean debug = false | PADHeadOverlayService.debugAll;
 
 	int rows;
 	int cols;
 
-	/** Multiplier for multiple orbs */
+	/**
+	 * Multiplier for multiple orbs
+	 */
 	float multiOrbBonus = 0.25f;
 
-	/** Multiplier for combos */
+	/**
+	 * Multiplier for combos
+	 */
 	float comboBonus = 0.25f;
 
-	/** Threshhold for solutions */
+	/**
+	 * Threshhold for solutions
+	 */
 	int maxSolutions;
 
-	/** Initial board state */
+	/**
+	 * Initial board state
+	 */
 	PADBoard globalBoard;
 
-	/** Threshhold for solution lengths */
+	/**
+	 * Threshhold for solution lengths
+	 */
 	int maxPathLength;
 
-	/** Toggle for allowing 8directional movement in solution paths */
+	/**
+	 * Toggle for allowing 8directional movement in solution paths
+	 */
 	boolean allow8Dir;
 
-	/** Map of weights */
+	/**
+	 * Map of weights
+	 */
 	protected HashMap weights;
 
-	/** Accessor for the final solution set */
+	/**
+	 * Accessor for the final solution set
+	 */
 	public ArrayList<PADSolution> finalSolutions;
 
-	/** Threshhold for the final output of solutions*/
+	/**
+	 * Threshhold for the final output of solutions
+	 */
 	private int maxSimplifiedSolutions;
 
-	/** Called to initiate solving the given input */
-	public void solve(String input, int maxPathLengthL, boolean allow8Dir , ArrayList<OrbWeight> externWeights, int maxSimp, int rows, int cols) {
+	/**
+	 * Called to initiate solving the given input
+	 */
+	public void solve(String input, int maxPathLengthL, boolean allow8Dir, ArrayList<OrbWeight> externWeights, int maxSimp, int rows, int cols) {
 		this.rows = rows;
 		this.cols = cols;
 		globalBoard = new PADBoard();
@@ -63,7 +83,7 @@ public class PADHeadSolver {
 		maxSimplifiedSolutions = maxSimp;
 		weights = new HashMap();
 
-		for(OrbWeight w : externWeights) {
+		for (OrbWeight w : externWeights) {
 			weights.put(new Character(w.getType()), new Tuple<Float, Float>(new Float(w.getNormalWeight()), new Float(w.getMassWeight())));
 		}
 		debug = false;
@@ -71,7 +91,9 @@ public class PADHeadSolver {
 		solveBoard(globalBoard);
 	}
 
-	/** Solve the given board and iterate on it */
+	/**
+	 * Solve the given board and iterate on it
+	 */
 	protected void solveBoard(PADBoard board) {
 		PADSolution[] solutions = new PADSolution[rows * cols];
 		PADSolution seedSolution = new PADSolution(board.copy());
@@ -99,7 +121,9 @@ public class PADHeadSolver {
 		solveBoardStep(solveState);
 	}
 
-	/** Solves one 'board step', i.e. processes a movement for each solution in the current solve state*/
+	/**
+	 * Solves one 'board step', i.e. processes a movement for each solution in the current solve state
+	 */
 	protected void solveBoardStep(PADSolveState solveState) {
 
 		// if the number of iterations, i.e. moves, has surpassed the user-defined maximum number
@@ -117,30 +141,34 @@ public class PADHeadSolver {
 		solveBoardStep(solveState);
 	}
 
-	/** Simplifies solutions (i.e. consolidate duplicates) and put the final output into finalSolutions */
+	/**
+	 * Simplifies solutions (i.e. consolidate duplicates) and put the final output into finalSolutions
+	 */
 	protected void finish(ArrayList<PADSolution> solutions) {
 		solutions = simplifySolutions(solutions);
 		finalSolutions = solutions;
 	}
 
-	/** Removes duplicate solutions from the given list */
-	protected ArrayList<PADSolution> simplifySolutions (ArrayList<PADSolution> solutions){
+	/**
+	 * Removes duplicate solutions from the given list
+	 */
+	protected ArrayList<PADSolution> simplifySolutions(ArrayList<PADSolution> solutions) {
 		ArrayList<PADSolution> simplified = new ArrayList<PADSolution>();
 		simplified.add(solutions.get(0));
 
-		for(int i = 0; i < solutions.size(); i++){
-			boolean add  = true;
+		for (int i = 0; i < solutions.size(); i++) {
+			boolean add = true;
 			PADSolution sol1 = solutions.get(i);
-			for(int j = 0; j < simplified.size(); j++){
+			for (int j = 0; j < simplified.size(); j++) {
 				PADSolution sol2 = simplified.get(j);
-				if((sol1.cmpMatches(sol2))){
+				if ((sol1.cmpMatches(sol2))) {
 					add = false;
 					break;
 				}
 			}
-			if(add){
+			if (add) {
 				simplified.add(solutions.get(i));
-				if(simplified.size() > maxSimplifiedSolutions){
+				if (simplified.size() > maxSimplifiedSolutions) {
 					return simplified;
 				}
 			}
@@ -149,7 +177,9 @@ public class PADHeadSolver {
 		return simplified;
 	}
 
-	/** Iterates each set of solutions */
+	/**
+	 * Iterates each set of solutions
+	 */
 	private ArrayList<PADSolution> evolveSolutions(ArrayList<PADSolution> solutions, int dirStep) {
 		ArrayList<PADSolution> newSolutions = new ArrayList<PADSolution>();
 		for (PADSolution s : solutions) {
@@ -169,7 +199,7 @@ public class PADHeadSolver {
 		}
 
 
-		for(PADSolution sol : newSolutions){
+		for (PADSolution sol : newSolutions) {
 			solutions.add(sol);
 		}
 
@@ -188,15 +218,17 @@ public class PADHeadSolver {
 
 		// slice off all the solutions outside of the maximum range of solutions
 		int sliceidx = maxSolutions;
-		if(sliceidx > solutions.size()){
+		if (sliceidx > solutions.size()) {
 			sliceidx = solutions.size();
 		}
 
 		return new ArrayList<PADSolution>(solutions.subList(0, sliceidx));
 	}
 
-	/** Check if there can be movement in a direction... essentially, prevent moving backwards and
-	 * getting stuck in a loop and prevent moving off of the board */
+	/**
+	 * Check if there can be movement in a direction... essentially, prevent moving backwards and
+	 * getting stuck in a loop and prevent moving off of the board
+	 */
 	private boolean canMoveOrbInSolution(PADSolution solution, int dir) {
 		if (solution.getPath().size() > 0) {
 			if (solution.getPath().get(solution.getPath().size() - 1) == (dir + 4) % 8) {
@@ -207,7 +239,9 @@ public class PADHeadSolver {
 		return canMoveOrb(solution.getCursor(), dir);
 	}
 
-	/** Prevent moving off of the board */
+	/**
+	 * Prevent moving off of the board
+	 */
 	private boolean canMoveOrb(RowColumn rc, int dir) {
 		switch (dir) {
 			case 0:
@@ -230,19 +264,25 @@ public class PADHeadSolver {
 		return false;
 	}
 
-	/** Swap two orbs, e.g. when moving an orb in a solution, two orbs would get swapped. Update the
-	 * solution's cursor as well */
+	/**
+	 * Swap two orbs, e.g. when moving an orb in a solution, two orbs would get swapped. Update the
+	 * solution's cursor as well
+	 */
 	private void inPlaceSwapOrbInSolution(PADSolution solution, int dir) {
 		inPlaceOrbSwap(solution.getBoard(), solution.getCursor(), dir);
 		solution.setCursor(__rc);
 		solution.getPath().add(dir);
 	}
 
-	/** A tuple return artifact from the javascript port; returned from inPlaceOrbSwap, utilized in
-	 * inPlaceOrbSwapInSolution */
+	/**
+	 * A tuple return artifact from the javascript port; returned from inPlaceOrbSwap, utilized in
+	 * inPlaceOrbSwapInSolution
+	 */
 	private RowColumn __rc;
 
-	/** Swap two orbs on the board */
+	/**
+	 * Swap two orbs on the board
+	 */
 	private PADBoard inPlaceOrbSwap(PADBoard board, RowColumn rc, int dir) {
 		RowColumn oldRC = rc.copy();
 		inPlaceMoveRc(rc, dir);
@@ -253,7 +293,9 @@ public class PADHeadSolver {
 		return board;
 	}
 
-	/** Moves a RowColumn in the specified direction */
+	/**
+	 * Moves a RowColumn in the specified direction
+	 */
 	void inPlaceMoveRc(RowColumn rc, int dir) {
 		switch (dir) {
 			case 0:
@@ -287,11 +329,15 @@ public class PADHeadSolver {
 		}
 	}
 
-	/** tuple return artifact form the javascript port; returned from findMatches, utilized in
-	 * inPlaceEvaluateSolution and other subsequent places*/
+	/**
+	 * tuple return artifact form the javascript port; returned from findMatches, utilized in
+	 * inPlaceEvaluateSolution and other subsequent places
+	 */
 	private PADBoard __matchBoard;
 
-	/** Evaluates a given solution for combos and calculates the weights*/
+	/**
+	 * Evaluates a given solution for combos and calculates the weights
+	 */
 	public PADBoard inPlaceEvaluateSolution(PADSolution solution) {
 		PADBoard currentBoard = solution.getBoard().copy();
 
@@ -311,7 +357,7 @@ public class PADHeadSolver {
 			inPlaceDropEmptySpaces(currentBoard);
 
 			// add found matches to allMatches
-			for(Match m : matches){
+			for (Match m : matches) {
 				allMatches.add(m);
 			}
 		}
@@ -322,14 +368,16 @@ public class PADHeadSolver {
 		return currentBoard;
 	}
 
-	/** Removes all matches in the solution and drops the empty spaces, for use solely by the service
+	/**
+	 * Removes all matches in the solution and drops the empty spaces, for use solely by the service
 	 * in order to expedite recreation of the new board state by the user
-	 *
-	 * NOT used in the actual solver algorithm */
+	 * <p/>
+	 * NOT used in the actual solver algorithm
+	 */
 	public PADBoard dropMatches(PADSolution solution) {
 		rows = PADHeadOverlayService.rows;
 		cols = PADHeadOverlayService.cols;
-		if(debug) Log.d("PADHeadSolver debug", "dropMatches");
+		if (debug) Log.d("PADHeadSolver debug", "dropMatches");
 		PADBoard currentBoard = solution.getBoard().copy();
 		while (true) {
 			ArrayList<Match> matches = findMatches(currentBoard);
@@ -342,13 +390,15 @@ public class PADHeadSolver {
 		return currentBoard;
 	}
 
-	/** Remove all non-blank orbs from the provided matchBoard, as it's a board containing only matches */
+	/**
+	 * Remove all non-blank orbs from the provided matchBoard, as it's a board containing only matches
+	 */
 	PADBoard inPlaceRemoveMatches(PADBoard board, PADBoard matchBoard) {
-		if(debug) Log.d("PADHeadSolver debug", "inPlaceRemoveMatches");
+		if (debug) Log.d("PADHeadSolver debug", "inPlaceRemoveMatches");
 		for (int i = 0; i < rows; ++i) {
 			for (int j = 0; j < cols; ++j) {
 				if (matchBoard.getBoard()[i][j] != '\u0000') {
-					board.getBoard()[i][j] ='u';
+					board.getBoard()[i][j] = 'u';
 				}
 			}
 		}
@@ -356,10 +406,12 @@ public class PADHeadSolver {
 
 	}
 
-	/** Drop all the orbs vertically in the given board, used after removing matches from a board
-	 * to simulate natural game progress */
+	/**
+	 * Drop all the orbs vertically in the given board, used after removing matches from a board
+	 * to simulate natural game progress
+	 */
 	PADBoard inPlaceDropEmptySpaces(PADBoard board) {
-		if(debug) Log.d("PADHeadSolver debug", "inPlaceDropEmptySpaces");
+		if (debug) Log.d("PADHeadSolver debug", "inPlaceDropEmptySpaces");
 		for (int j = 0; j < cols; ++j) {
 			int desti = rows - 1;
 			for (int srci = rows - 1; srci >= 0; --srci) {
@@ -375,7 +427,9 @@ public class PADHeadSolver {
 		return board;
 	}
 
-	/** Compute the weights for the given matches */
+	/**
+	 * Compute the weights for the given matches
+	 */
 	public float computeWeight(ArrayList<Match> matches) {
 		float totalWeight = 0f;
 		for (Match m : matches) {
@@ -383,9 +437,9 @@ public class PADHeadSolver {
 			// determine whether the weighting scheme used should be based on the mass weight or
 			// normal amount weight
 			if (m.getCount() >= 5) {
-				baseWeight = ((Tuple<Float, Float>)(weights.get(new Character(m.getType())))).x;
+				baseWeight = ((Tuple<Float, Float>) (weights.get(new Character(m.getType())))).x;
 			} else {
-				baseWeight = ((Tuple<Float, Float>)(weights.get(new Character(m.getType())))).y;
+				baseWeight = ((Tuple<Float, Float>) (weights.get(new Character(m.getType())))).y;
 			}
 
 			// factor in the user-defined multiorb bonus
@@ -399,10 +453,12 @@ public class PADHeadSolver {
 		return totalWeight * lcomboBonus;
 	}
 
-	/** Find all orb matches in the given board */
+	/**
+	 * Find all orb matches in the given board
+	 */
 	public ArrayList<Match> findMatches(PADBoard board) {
 		PADBoard matchBoard = new PADBoard();
-		if(debug) Log.d("findMatches", "debugging findMatches");
+		if (debug) Log.d("findMatches", "debugging findMatches");
 		char prev1Orb, prev2Orb, currentOrb;
 
 		// 3 orbs in a row
@@ -416,12 +472,12 @@ public class PADHeadSolver {
 			prev2Orb = ('u');
 			for (int j = 0; j < cols; ++j) {
 				currentOrb = (board.getBoard()[i][j]);
-				if(debug) Log.d("findMatches", "" + currentOrb);
+				if (debug) Log.d("findMatches", "" + currentOrb);
 				if (prev1Orb == (prev2Orb) && prev2Orb == (currentOrb) && currentOrb != 'u') {
 					matchBoard.getBoard()[i][j] = currentOrb;
 					matchBoard.getBoard()[i][j - 1] = currentOrb;
 					matchBoard.getBoard()[i][j - 2] = currentOrb;
-					if(debug) Log.d("findMatches", "Matchboard marked");
+					if (debug) Log.d("findMatches", "Matchboard marked");
 				}
 				prev1Orb = prev2Orb;
 				prev2Orb = currentOrb;
@@ -430,14 +486,14 @@ public class PADHeadSolver {
 
 		// check for horizontal matches and populate the matchBoard with them
 		for (int j = 0; j < cols; ++j) {
-			prev1Orb  = 'u';
+			prev1Orb = 'u';
 			prev2Orb = 'u';
 			for (int i = 0; i < rows; ++i) {
 				currentOrb = board.getBoard()[i][j];
 				if (prev1Orb == (prev2Orb) && prev2Orb == (currentOrb) && currentOrb != 'u') {
-						matchBoard.getBoard()[i][j] = currentOrb;
-						matchBoard.getBoard()[i - 1][j] = currentOrb;
-						matchBoard.getBoard()[i - 2][j] = currentOrb;
+					matchBoard.getBoard()[i][j] = currentOrb;
+					matchBoard.getBoard()[i - 1][j] = currentOrb;
+					matchBoard.getBoard()[i - 2][j] = currentOrb;
 				}
 				prev1Orb = prev2Orb;
 				prev2Orb = currentOrb;
@@ -451,7 +507,7 @@ public class PADHeadSolver {
 		ArrayList<Match> matches = new ArrayList<Match>();
 		for (int i = 0; i < rows; ++i) {
 			for (int j = 0; j < cols; ++j) {
-				currentOrb  = scratchBoard.getBoard()[i][j];
+				currentOrb = scratchBoard.getBoard()[i][j];
 				if (currentOrb != '\u0000' /*&& currentOrb.getType() != ('u')*/) {
 					ArrayList<RowColumn> stack = new ArrayList<RowColumn>();
 					stack.add(new RowColumn(i, j));

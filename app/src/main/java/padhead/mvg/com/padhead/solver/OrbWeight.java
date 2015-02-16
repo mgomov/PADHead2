@@ -4,39 +4,45 @@ package padhead.mvg.com.padhead.solver;
  * Defines an orb and it's weight for normal combos (3-4) and mass combos (5+)
  */
 public class OrbWeight {
-	/** Orb type */
+	/**
+	 * Orb type
+	 */
 	private char type;
 
-	/** 3-4 combo weight */
+	/**
+	 * 3-4 combo weight
+	 */
 	private float normalWeight;
 
-	/** 5+ combo weight */
+	/**
+	 * 5+ combo weight
+	 */
 	private float massWeight;
 
-	public OrbWeight(char t, float nw, float mw){
+	public OrbWeight(char t, float nw, float mw) {
 		type = t;
 		normalWeight = nw;
 		massWeight = mw;
 	}
 
-	public float getMassWeight(){
+	public float getMassWeight() {
 		return massWeight;
 	}
 
-	public float getNormalWeight(){
+	public float getNormalWeight() {
 		return normalWeight;
 	}
 
-	public void setNormalWeight(float nw){
+	public void setNormalWeight(float nw) {
 		normalWeight = nw;
 	}
 
-	public void setMassWeight(float mw){
+	public void setMassWeight(float mw) {
 		massWeight = mw;
 	}
 
 
-	public char getType(){
+	public char getType() {
 		return type;
 	}
 }

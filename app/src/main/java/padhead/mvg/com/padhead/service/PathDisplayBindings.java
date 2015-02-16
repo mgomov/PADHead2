@@ -1,5 +1,6 @@
 package padhead.mvg.com.padhead.service;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +16,7 @@ import padhead.mvg.com.padhead.solver.RowColumn;
  * Convenience binding to manage the tiles in the path display portion of the touchless overlay
  * Author: Maxim Gomov
  */
-public class PathDisplayBindings extends BoardBinding{
+public class PathDisplayBindings extends BoardBinding {
 	public PathDisplayBindings(View tlo, int rows, int cols) {
 		super(tlo, R.id.ll_touchless_path, rows, cols);
 
@@ -23,13 +24,17 @@ public class PathDisplayBindings extends BoardBinding{
 	}
 
 	@Override
-	protected void configBindingElement(Button bindingElement, LinearLayout.LayoutParams params) {
+	protected Button configBindingElement(LinearLayout.LayoutParams params, Context ctx) {
+		Button bindingElement = new Button(ctx);
 		bindingElement.setLayoutParams(params);
 		bindingElement.setVisibility(View.INVISIBLE);
 		bindingElement.setText(" ");
+		return bindingElement;
 	}
 
-	/** Enable an individual tile based on coordinate */
+	/**
+	 * Enable an individual tile based on coordinate
+	 */
 	public void enable(int x, int y, String text) {
 		Button b = binding[x][y];
 		b.setVisibility(View.VISIBLE);
@@ -37,7 +42,9 @@ public class PathDisplayBindings extends BoardBinding{
 		b.setText(binding[x][y].getText().toString() + " " + text);
 	}
 
-	/** Hide all of the tiles governed by this binding*/
+	/**
+	 * Hide all of the tiles governed by this binding
+	 */
 	public void hideAll(boolean removeText) {
 		for (int i = 0; i < binding.length; i++) {
 			for (int j = 0; j < binding[0].length; j++) {
@@ -47,8 +54,11 @@ public class PathDisplayBindings extends BoardBinding{
 			}
 		}
 	}
-	/** Trace a path from the given solution and then return a list with each button/tile in the order
-	 * they're supposed to be toggled in */
+
+	/**
+	 * Trace a path from the given solution and then return a list with each button/tile in the order
+	 * they're supposed to be toggled in
+	 */
 	public ArrayList<Button> tracePath(PADSolution solution, boolean doEnable) {
 		RowColumn cursor = solution.getInitCursor().copy();
 		ArrayList<Button> enabled = new ArrayList<Button>();
@@ -90,8 +100,8 @@ public class PathDisplayBindings extends BoardBinding{
 					cursor.col++;
 					break;
 			}
-
-			enabled.add(binding[cursor.row][cursor.col]);
+			if (cursor.row > -1 && cursor.col > -1)
+				enabled.add(binding[cursor.row][cursor.col]);
 			if (doEnable) enable(cursor.row, cursor.col, "" + itr);
 			itr++;
 

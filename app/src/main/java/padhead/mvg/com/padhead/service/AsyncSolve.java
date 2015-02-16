@@ -9,8 +9,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import padhead.mvg.com.padhead.R;
-import padhead.mvg.com.padhead.overlay.OverlayTouchOrbSetup;
-import padhead.mvg.com.padhead.overlay.OverlayTouchSolutions;
 import padhead.mvg.com.padhead.solver.OrbWeight;
 import padhead.mvg.com.padhead.solver.PADHeadSolverAsync;
 import padhead.mvg.com.padhead.solver.PADSolution;
@@ -21,22 +19,30 @@ import padhead.mvg.com.padhead.solver.PADSolution;
  */
 public class AsyncSolve extends AsyncTask<String, String, ArrayList<PADSolution>> {
 
-	/** Collection of orb weights used to prune worse solutions */
+	/**
+	 * Collection of orb weights used to prune worse solutions
+	 */
 	ArrayList<OrbWeight> weights;
 
-	/** Threshhold for simplified solutions to accept */
+	/**
+	 * Threshhold for simplified solutions to accept
+	 */
 	int maxSimplifiedSolutions;
 
-	/** Dimensions of the game board, defined by the overlay service*/
+	/**
+	 * Dimensions of the game board, defined by the overlay service
+	 */
 	int rows;
 	int cols;
 
-	/** Accessor for the service and some overlays*/
+	/**
+	 * Accessor for the service and some overlays
+	 */
 	PADHeadOverlayService serviceAccessor;
 	View overlayTouchOrbSetup;
 	View overlayTouchSolutions;
 
-	public AsyncSolve(ArrayList<OrbWeight> weights, int maxSimplifiedSolutions, int rows, int cols, PADHeadOverlayService serviceAccessor, View overlayTouchOrbSetup, View overlayTouchSolutions){
+	public AsyncSolve(ArrayList<OrbWeight> weights, int maxSimplifiedSolutions, int rows, int cols, PADHeadOverlayService serviceAccessor, View overlayTouchOrbSetup, View overlayTouchSolutions) {
 		this.weights = weights;
 		this.maxSimplifiedSolutions = maxSimplifiedSolutions;
 		this.rows = rows;
@@ -65,7 +71,9 @@ public class AsyncSolve extends AsyncTask<String, String, ArrayList<PADSolution>
 		return solutions;
 	}
 
-	/** Used by the async solver to publish progress to the UI thread */
+	/**
+	 * Used by the async solver to publish progress to the UI thread
+	 */
 	public void doPublish(int prog) {
 		publishProgress("" + prog);
 	}

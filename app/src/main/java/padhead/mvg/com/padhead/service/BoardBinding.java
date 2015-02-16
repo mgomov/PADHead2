@@ -1,5 +1,6 @@
 package padhead.mvg.com.padhead.service;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -11,27 +12,28 @@ import android.widget.LinearLayout;
 public abstract class BoardBinding {
 	protected Button[][] binding;
 
-	public BoardBinding(View v, int containerId, int rows, int cols){
+	public BoardBinding(View v, int containerId, int rows, int cols) {
 		binding = new Button[rows][cols];
 		LinearLayout container = (LinearLayout) v.findViewById(containerId);
-		LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f / ((float)rows));
-		LinearLayout.LayoutParams elementParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f / ((float)cols));
+		LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f / ((float) rows));
+		LinearLayout.LayoutParams elementParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f / ((float) cols));
 
-		for(int i = 0; i < rows; i++){
+		for (int i = 0; i < rows; i++) {
 			LinearLayout aRow = new LinearLayout(v.getContext());
 			aRow.setOrientation(LinearLayout.HORIZONTAL);
 			aRow.setLayoutParams(rowParams);
 			container.addView(aRow);
-			for(int j = 0; j < cols; j++){
-				Button pathElement = new Button(v.getContext());
-				configBindingElement(pathElement, elementParams);
+			for (int j = 0; j < cols; j++) {
+				Button pathElement = configBindingElement(elementParams, v.getContext());
 				aRow.addView(pathElement);
 				binding[i][j] = pathElement;
 			}
 		}
 	}
 
-	/** Applies button styling, and general setup to each element of the binding */
-	protected abstract void configBindingElement(Button bindingElement, LinearLayout.LayoutParams params);
+	/**
+	 * Applies button styling, and general setup to each element of the binding
+	 */
+	protected abstract Button configBindingElement(LinearLayout.LayoutParams params, Context ctx);
 
 }

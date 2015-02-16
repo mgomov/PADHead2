@@ -18,11 +18,12 @@ import padhead.mvg.com.padhead.solver.PADSolution;
  * Adapter to populate the solutions browser ListView
  * Author: Maxim Gomov
  */
-public class PADAdapter extends BaseAdapter{
+public class PADAdapter extends BaseAdapter {
 	ArrayList<PADSolution> solutions;
 	protected LayoutInflater layoutInflater;
 	protected PADHeadOverlayService serviceAccessor;
-	public PADAdapter(Context ctx, ArrayList<PADSolution> solutions, PADHeadOverlayService svc){
+
+	public PADAdapter(Context ctx, ArrayList<PADSolution> solutions, PADHeadOverlayService svc) {
 		this.solutions = solutions;
 		serviceAccessor = svc;
 		layoutInflater = LayoutInflater.from(ctx);
@@ -50,8 +51,8 @@ public class PADAdapter extends BaseAdapter{
 		// how long the path is
 
 		convertView = layoutInflater.inflate(R.layout.solution_lvrow, parent, false);
-		TextView wv = (TextView)convertView.findViewById(R.id.slr_weight);
-		TextView mt = (TextView)convertView.findViewById(R.id.slr_matches);
+		TextView wv = (TextView) convertView.findViewById(R.id.slr_weight);
+		TextView mt = (TextView) convertView.findViewById(R.id.slr_matches);
 
 		PADSolution solution = solutions.get(position);
 		DecimalFormat df = new DecimalFormat(".##");
@@ -69,8 +70,8 @@ public class PADAdapter extends BaseAdapter{
 
 		boolean cr, cb, cg, cy, cp, ch, cj;
 		cr = cb = cg = cy = cp = ch = cj = false;
-		for(Match m : solution.getMatches()){
-			switch(m.getType()){
+		for (Match m : solution.getMatches()) {
+			switch (m.getType()) {
 				case 'r':
 					red += m.getCount() + "r ";
 					cr = true;
@@ -101,38 +102,38 @@ public class PADAdapter extends BaseAdapter{
 					break;
 			}
 		}
-		text += "W: " + df.format(solution.getWeight()) +  "\t\t\t#C: " + solution.getMatches().size() + "\t\t\tL: " + (solution.getPath().size() + 1) + "\n" ;
-		if(cr){
+		text += "W: " + df.format(solution.getWeight()) + "\t\t\t#C: " + solution.getMatches().size() + "\t\t\tL: " + (solution.getPath().size() + 1) + "\n";
+		if (cr) {
 			text += "[R]\t";
 		} else {
 			text += "\t";
 		}
-		if(cb){
+		if (cb) {
 			text += "[B]\t";
 		} else {
 			text += "\t";
 		}
-		if(cg){
+		if (cg) {
 			text += "[G]\t";
 		} else {
 			text += "\t";
 		}
-		if(cy){
+		if (cy) {
 			text += "[Y]\t";
 		} else {
 			text += "\t";
 		}
-		if(cp){
+		if (cp) {
 			text += "[P]\t";
 		} else {
 			text += "\t";
 		}
-		if(ch){
+		if (ch) {
 			text += "[H]\t";
 		} else {
 			text += "\t";
 		}
-		if(cj){
+		if (cj) {
 			text += "[J]\t";
 		} else {
 			text += "\t";
@@ -141,19 +142,19 @@ public class PADAdapter extends BaseAdapter{
 
 		text += "\n" + red + '\n' + blue + '\n' + green + '\n' + light + '\n' + purple + '\n' + heart + junk;
 
-		((TextView)convertView.findViewById(R.id.lvrow_mainText)).setText(text);
-		((TextView)convertView.findViewById(R.id.lvrow_position)).setText("" + position);
+		((TextView) convertView.findViewById(R.id.lvrow_mainText)).setText(text);
+		((TextView) convertView.findViewById(R.id.lvrow_position)).setText("" + position);
 
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 
-				serviceAccessor.setActiveSolution(solutions.get(Integer.parseInt(((TextView)v.findViewById(R.id.lvrow_position)).getText().toString())));
+				serviceAccessor.setActiveSolution(solutions.get(Integer.parseInt(((TextView) v.findViewById(R.id.lvrow_position)).getText().toString())));
 				String str = "";
-				for(Match m : solutions.get(Integer.parseInt(((TextView)v.findViewById(R.id.lvrow_position)).getText().toString())).getMatches()){
+				for (Match m : solutions.get(Integer.parseInt(((TextView) v.findViewById(R.id.lvrow_position)).getText().toString())).getMatches()) {
 					str += m.getType() + "" + m.getCount() + " ";
 				}
-				((TextView)(v.getRootView().findViewById(R.id.tv_currentSolution))).setText("Selected Combo:\n" + str);
+				((TextView) (v.getRootView().findViewById(R.id.tv_currentSolution))).setText("Selected Combo:\n" + str);
 			}
 		});
 		return convertView;

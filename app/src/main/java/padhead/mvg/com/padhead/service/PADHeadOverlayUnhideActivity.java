@@ -17,5 +17,5 @@ public class PADHeadOverlayUnhideActivity extends Activity {
 		sendBroadcast(i);
 		finish();
 	}
-    
+
 }

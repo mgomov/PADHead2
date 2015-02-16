@@ -149,11 +149,11 @@ public class PADSolution {
 		Collections.sort(other.matches, cmp2);
 		String s1 = "";
 		String s2 = "";
-		for(int i = 0; i < matches.size(); i++){
+		for (int i = 0; i < matches.size(); i++) {
 			s1 += matches.get(i).getType() + "" + matches.get(i).getCount() + " ";
 
 		}
-		for(int i = 0; i < other.matches.size(); i++){
+		for (int i = 0; i < other.matches.size(); i++) {
 			s2 += other.matches.get(i).getType() + "" + other.matches.get(i).getCount() + " ";
 		}
 
