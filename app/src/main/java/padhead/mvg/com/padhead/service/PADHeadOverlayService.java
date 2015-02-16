@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -327,9 +328,13 @@ public class PADHeadOverlayService extends OverlayService {
 				WeightedRadioButton rb = new WeightedRadioButton(this);
 				JSONObject obj = weights.getJSONObject(i);
 
+				LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+				rb.setLayoutParams(params);
+
 				rb.setText(obj.getString("name"));
 				rb.setWeights((float) obj.getDouble("rnw"), (float) obj.getDouble("rmw"), (float) obj.getDouble("bnw"), (float) obj.getDouble("bmw"), (float) obj.getDouble("gnw"), (float) obj.getDouble("gmw"), (float) obj.getDouble("lnw"), (float) obj.getDouble("lmw"), (float) obj.getDouble("dnw"), (float) obj.getDouble("dmw"), (float) obj.getDouble("hnw"), (float) obj.getDouble("hmw"), (float) obj.getDouble("jnw"), (float) obj.getDouble("jmw"));
 				rb.setId(i + idMask);
+
 				radioGroup.addView(rb);
 				radioButtons.put(i + idMask, rb);
 			}
